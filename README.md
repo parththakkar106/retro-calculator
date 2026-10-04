@@ -2,6 +2,8 @@
 
 A 1970s-style desk calculator in a single HTML file: seven-segment display, chunky keys, and a paper tape that prints every step.
 
+**▶ Play it: https://parththakkar106.github.io/retro-calculator/**
+
 ## How it calculates
 
 - **Left to right, no precedence.** Each operator computes immediately, so `2 + 3 × 4 = 20`.
