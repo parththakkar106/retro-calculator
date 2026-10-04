@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Desk Calculator 1974</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&family=Michroma&display=swap">
+<style>
+/* Layout: one chunky 1970s desk calculator centred on a walnut desk, paper tape printing below it. Single deliberate look. */
+:root {
+  --desk: #2a1d14;
+  --desk-2: #3a281b;
+  --shell: #c9b48a;
+  --shell-dark: #8f7a52;
+  --bezel: #1b1a17;
+  --glass: #0b130f;
+  --glow: #7dffb2;
+  --glow-dim: rgba(125,255,178,0.09);
+  --key: #3b3832;
+  --key-top: #4a463f;
+  --key-text: #efe6d2;
+  --key-op: #b5652b;
+  --key-op-top: #c97638;
+  --key-eq: #8a2f22;
+  --key-eq-top: #a33a2a;
+  --paper: #f3ecd9;
+  --ink: #3a3328;
+  --ink-red: #a3322a;
+  --f-display: "VT323", "Courier New", monospace;
+  --f-label: "Michroma", "Arial Black", sans-serif;
+  color-scheme: dark;
+}
+html, body { height: 100%; margin: 0; }
+body {
+  background: var(--desk);
+  background-image: repeating-linear-gradient(92deg, var(--desk) 0 7px, var(--desk-2) 7px 9px, var(--desk) 9px 19px);
+  color: var(--key-text);
+  font-family: var(--f-label);
+}
+.wrap {
+  min-height: 100%;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 0;
+  padding-block: 28px 40px;
+  padding-inline: 16px;
+  box-sizing: border-box;
+}
+.calc {
+  width: 100%; max-width: 360px;
+  background: linear-gradient(180deg, #d6c39a 0%, var(--shell) 40%, #b9a379 100%);
+  border-radius: 14px 14px 22px 22px;
+  padding: 20px 18px 22px;
+  box-sizing: border-box;
+  box-shadow: 0 2px 0 #e6d6b2 inset, 0 -4px 0 var(--shell-dark) inset, 0 22px 40px rgba(0,0,0,.55);
+  position: relative; z-index: 2;
+}
+.brand {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 12px; color: #4a3d26;
+}
+.brand b { font-size: 13px; letter-spacing: .28em; }
+.brand span { font-size: 8px; letter-spacing: .18em; opacity: .8; }
+.bezel {
+  background: var(--bezel);
+  border-radius: 6px;
+  padding: 10px;
+  box-shadow: 0 3px 6px rgba(0,0,0,.5) inset;
+}
+.screen {
+  background: var(--glass);
+  border-radius: 3px;
+  padding: 6px 10px 4px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px #000 inset;
+}
+.screen::after { /* faint scanlines */
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,.25) 0 1px, transparent 1px 3px);
+}
+.annun {
+  display: flex; gap: 10px; height: 14px;
+  font-family: var(--f-display); font-size: 15px; line-height: 14px;
+  color: var(--glow);
+  text-shadow: 0 0 6px var(--glow);
+}
+.annun i { font-style: normal; opacity: .08; text-shadow: none; }
+.annun i.on { opacity: 1; text-shadow: 0 0 6px var(--glow); }
+.annun .sp { flex: 1; }
+.digits {
+  display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px;
+  padding: 4px 0 2px;
+}
+.digits svg { width: 100%; height: auto; display: block; overflow: visible; }
+.digits svg g { transform: skewX(-7deg); transform-origin: 50% 100%; }
+.digits .seg { fill: var(--glow-dim); }
+.digits .seg.on { fill: var(--glow); filter: drop-shadow(0 0 2px var(--glow)) drop-shadow(0 0 5px rgba(125,255,178,.5)); }
+.pending {
+  font-family: var(--f-display); font-size: 17px; color: var(--glow);
+  opacity: .7; text-align: right; height: 18px; line-height: 18px;
+  text-shadow: 0 0 5px var(--glow);
+}
+
+.keys {
+  margin-top: 18px;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 11px;
+}
+.keys button {
+  font-family: var(--f-label);
+  font-size: 15px;
+  color: var(--key-text);
+  border: 0; border-radius: 7px;
+  height: 52px;
+  background: linear-gradient(180deg, var(--key-top), var(--key));
+  box-shadow: 0 4px 0 #1d1b18, 0 6px 8px rgba(0,0,0,.35), 0 1px 0 rgba(255,255,255,.12) inset;
+  cursor: pointer;
+  transition: transform .04s, box-shadow .04s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.keys button.op { background: linear-gradient(180deg, var(--key-op-top), var(--key-op)); box-shadow: 0 4px 0 #6e3a15, 0 6px 8px rgba(0,0,0,.35), 0 1px 0 rgba(255,255,255,.18) inset; }
+.keys button.eq { background: linear-gradient(180deg, var(--key-eq-top), var(--key-eq)); box-shadow: 0 4px 0 #4f1810, 0 6px 8px rgba(0,0,0,.35), 0 1px 0 rgba(255,255,255,.15) inset; grid-row: span 2; height: auto; font-size: 22px; }
+.keys button.fn { font-size: 11px; letter-spacing: .08em; color: #f4c99a; }
+.keys button.zero { grid-column: span 2; }
+.keys button:active, .keys button.press { transform: translateY(3px); box-shadow: 0 1px 0 #1d1b18, 0 2px 3px rgba(0,0,0,.35); }
+.keys button:focus-visible { outline: 2px solid var(--glow); outline-offset: 2px; }
+
+.foot { margin-top: 14px; text-align: center; font-size: 7.5px; letter-spacing: .3em; color: #6d5c3c; }
+
+/* paper tape */
+.slot { width: 100%; max-width: 300px; height: 8px; background: #0e0b08; border-radius: 0 0 6px 6px; margin-top: -2px; position: relative; z-index: 1; box-shadow: 0 2px 2px rgba(0,0,0,.6) inset; }
+.tape {
+  width: 100%; max-width: 270px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--f-display); font-size: 21px; line-height: 1.05;
+  padding: 10px 16px 18px;
+  box-sizing: border-box;
+  max-height: 260px; overflow-y: auto;
+  box-shadow: 0 8px 18px rgba(0,0,0,.45);
+  -webkit-mask: linear-gradient(180deg, #000 85%, transparent);
+          mask: linear-gradient(180deg, #000 85%, transparent);
+}
+.tape .row { display: flex; justify-content: space-between; gap: 12px; }
+.tape .row .n { font-variant-numeric: tabular-nums; }
+.tape .row.tot { color: var(--ink-red); border-bottom: 1px dashed rgba(58,51,40,.35); padding-bottom: 3px; margin-bottom: 4px; }
+.tape .row.clr { justify-content: center; opacity: .5; font-size: 16px; }
+.tape .empty { text-align: center; opacity: .5; font-size: 17px; }
+.hint { margin-top: 14px; max-width: 300px; text-align: center; font-family: var(--f-display); font-size: 17px; color: #bfa982; opacity: .75; line-height: 1.2; }
+@media (prefers-reduced-motion: reduce) { .keys button { transition: none; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="calc">
+    <div class="brand"><b>ELECTRO·10</b><span>MODEL 74</span></div>
+    <div class="bezel">
+      <div class="screen" aria-live="polite">
+        <div class="annun"><i id="aM">M</i><i id="aNeg">−</i><span class="sp"></span><i id="aErr">ERR</i></div>
+        <div class="digits" id="disp"></div>
+        <div class="pending" id="pend"></div>
+      </div>
+    </div>
+
+    <div class="keys" id="keys">
+      <button class="fn" data-k="C" id="kC">C</button>
+      <button class="fn" data-k="CE" id="kCE">CE</button>
+      <button class="fn" data-k="neg" id="kNeg">+/−</button>
+      <button class="op" data-k="/" id="kDiv">÷</button>
+
+      <button data-k="7" id="k7">7</button>
+      <button data-k="8" id="k8">8</button>
+      <button data-k="9" id="k9">9</button>
+      <button class="op" data-k="*" id="kMul">×</button>
+
+      <button data-k="4" id="k4">4</button>
+      <button data-k="5" id="k5">5</button>
+      <button data-k="6" id="k6">6</button>
+      <button class="op" data-k="-" id="kSub">−</button>
+
+      <button data-k="1" id="k1">1</button>
+      <button data-k="2" id="k2">2</button>
+      <button data-k="3" id="k3">3</button>
+      <button class="op" data-k="+" id="kAdd">+</button>
+
+      <button data-k="0" class="zero" id="k0">0</button>
+      <button data-k="." id="kDot">.</button>
+      <button class="eq" data-k="=" id="kEq">=</button>
+      <button class="fn" data-k="%" id="kPct">%</button>
+      <button class="fn" data-k="sqrt" id="kSqrt">√</button>
+      <button class="fn" data-k="back" id="kBack">◂</button>
+    </div>
+    <div class="foot">IMMEDIATE EXECUTION · 10 DIGIT</div>
+  </div>
+  <div class="slot"></div>
+  <div class="tape" id="tape"><div class="empty">— tape —</div></div>
+  <p class="hint">Works left to right: 2 + 3 × 4 = 20. Press = again to repeat the last step on the new total.</p>
+</div>
+
+<script>
+(() => {
+  const MAXD = 10;
+  const disp = document.getElementById('disp');
+  const pend = document.getElementById('pend');
+  const tape = document.getElementById('tape');
+  const aNeg = document.getElementById('aNeg');
+  const aErr = document.getElementById('aErr');
+  const SYM = { '+': '+', '-': '−', '*': '×', '/': '÷' };
+
+  let acc = null;        // running total
+  let entry = '0';       // what's being typed
+  let typing = false;    // user is entering a new number
+  let op = null;         // pending operator
+  let lastOp = null, lastArg = null; // for repeated =
+  let err = false;
+
+  const apply = (a, o, b) => o === '+' ? a + b : o === '-' ? a - b : o === '*' ? a * b : (b === 0 ? NaN : a / b);
+
+  function fmt(n) {
+    if (!isFinite(n)) return null;
+    if (Math.abs(n) >= 10 ** MAXD) return null;
+    let s = Math.abs(n).toPrecision(MAXD);
+    if (s.includes('e')) return Math.abs(n) < 1e-9 ? '0' : null;
+    if (s.includes('.')) s = s.replace(/0+$/, '').replace(/\.$/, '');
+    const intLen = s.split('.')[0].length;
+    if (s.includes('.') && s.replace('.', '').length > MAXD) s = Math.abs(n).toFixed(Math.max(0, MAXD - intLen)).replace(/0+$/, '').replace(/\.$/, '');
+    return (n < 0 && s !== '0' ? '-' : '') + s;
+  }
+
+  // ---- seven-segment display ----
+  const H = (x1, x2, y) => `${x1},${y} ${x1+3},${y-3} ${x2-3},${y-3} ${x2},${y} ${x2-3},${y+3} ${x1+3},${y+3}`;
+  const V = (x, y1, y2) => `${x},${y1} ${x+3},${y1+3} ${x+3},${y2-3} ${x},${y2} ${x-3},${y2-3} ${x-3},${y1+3}`;
+  const SEGS = { a: H(8,32,5), b: V(34,7,34), c: V(34,36,63), d: H(8,32,65), e: V(6,36,63), f: V(6,7,34), g: H(8,32,35) };
+  const MASK = { '0':'abcdef','1':'bc','2':'abdeg','3':'abcdg','4':'bcfg','5':'acdfg','6':'acdefg','7':'abc','8':'abcdefg','9':'abcdfg','-':'g','E':'adefg',' ':'' };
+  const cells = [];
+  for (let i = 0; i < MAXD; i++) {
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', '0 0 44 70');
+    const g = document.createElementNS(ns, 'g');
+    const parts = {};
+    for (const [k, pts] of Object.entries(SEGS)) {
+      const p = document.createElementNS(ns, 'polygon');
+      p.setAttribute('points', pts); p.setAttribute('class', 'seg'); g.appendChild(p); parts[k] = p;
+    }
+    const dp = document.createElementNS(ns, 'circle');
+    dp.setAttribute('cx', 41); dp.setAttribute('cy', 65); dp.setAttribute('r', 2.8); dp.setAttribute('class', 'seg');
+    g.appendChild(dp); parts.dp = dp;
+    svg.appendChild(g); disp.appendChild(svg); cells.push(parts);
+  }
+  function drawSeg(str) {
+    // turn "12.5" into [{ch:'1'},{ch:'2',dp:true},{ch:'5'}]
+    const out = [];
+    for (const ch of str) {
+      if (ch === '.') { if (!out.length) out.push({ ch: '0' }); out[out.length - 1].dp = true; }
+      else out.push({ ch });
+    }
+    while (out.length < MAXD) out.unshift({ ch: ' ' });
+    out.slice(-MAXD).forEach((c, i) => {
+      const on = MASK[c.ch] ?? '';
+      for (const k of 'abcdefg') cells[i][k].classList.toggle('on', on.includes(k));
+      cells[i].dp.classList.toggle('on', !!c.dp);
+    });
+  }
+
+  function showNum(str) {
+    const neg = str.startsWith('-');
+    aNeg.classList.toggle('on', neg);
+    drawSeg(neg ? str.slice(1) : str);
+  }
+  function render() {
+    aErr.classList.toggle('on', err);
+    if (err) { aNeg.classList.remove('on'); drawSeg('E'); pend.textContent = ''; return; }
+    showNum(entry);
+    pend.textContent = op && acc !== null ? fmt(acc) + ' ' + SYM[op] : '';
+  }
+
+  function print(text, val, cls = '') {
+    const e = tape.querySelector('.empty'); if (e) e.remove();
+    const r = document.createElement('div');
+    r.className = 'row ' + cls;
+    r.innerHTML = `<span class="n"></span><span></span>`;
+    r.children[0].textContent = val;
+    r.children[1].textContent = text;
+    tape.appendChild(r);
+    tape.scrollTop = tape.scrollHeight;
+  }
+
+  function setResult(n) {
+    const s = fmt(n);
+    if (s === null) { err = true; print('ERR', '', 'tot'); return false; }
+    acc = n; entry = s; return true;
+  }
+
+  function digit(d) {
+    if (err) return;
+    if (!typing) { entry = d === '.' ? '0.' : d; typing = true; return; }
+    if (d === '.' && entry.includes('.')) return;
+    if (entry.replace(/[-.]/g, '').length >= MAXD) return;
+    entry = (entry === '0' && d !== '.') ? d : (entry === '-0' && d !== '.' ? '-' + d : entry + d);
+  }
+
+  function operator(o) {
+    if (err) return;
+    const cur = parseFloat(entry);
+    if (typing || acc === null) {
+      print(SYM[op] || '', fmt(cur));
+      if (op && acc !== null) { if (!setResult(apply(acc, op, cur))) return; }
+      else acc = cur;
+    }
+    // pressing another operator without typing just swaps it
+    op = o; typing = false; lastOp = null;
+  }
+
+  function equals() {
+    if (err) return;
+    const cur = parseFloat(entry);
+    if (op && acc !== null) {
+      const b = typing ? cur : (lastArg ?? cur);
+      if (typing) print(SYM[op], fmt(cur));
+      else print(SYM[op], fmt(b));
+      lastOp = op; lastArg = b;
+      if (!setResult(apply(acc, op, b))) return;
+      print('=', entry, 'tot');
+      op = null;
+    } else if (lastOp) {
+      // repeat: new total becomes the left side
+      const a = typing ? cur : acc;
+      if (typing) print('', fmt(a));
+      print(SYM[lastOp], fmt(lastArg));
+      if (!setResult(apply(a, lastOp, lastArg))) return;
+      print('=', entry, 'tot');
+    }
+    typing = false;
+  }
+
+  function clearAll() { acc = null; entry = '0'; typing = false; op = null; lastOp = null; lastArg = null; if (err || tape.querySelector('.row')) print('C', '', 'clr'); err = false; }
+  function clearEntry() { if (err) return clearAll(); entry = '0'; typing = true; }
+  function negate() { if (err) return; entry = entry.startsWith('-') ? entry.slice(1) : (entry === '0' ? '0' : '-' + entry); if (!typing && !op) acc = parseFloat(entry); }
+  function back() { if (err || !typing) return; entry = entry.slice(0, -1); if (entry === '' || entry === '-') entry = '0'; }
+  function sqrt() {
+    if (err) return;
+    const v = parseFloat(entry);
+    if (v < 0) { err = true; print('√ ERR', '', 'tot'); return; }
+    const s = fmt(Math.sqrt(v)); print('√', fmt(v)); entry = s; print('=', s, 'tot');
+    typing = false; if (!op) acc = Math.sqrt(v);
+  }
+  function percent() {
+    // classic: 200 + 10 % → 10% of 200; 50 × 10 % → 5
+    if (err) return;
+    const v = parseFloat(entry);
+    const p = (op === '+' || op === '-') && acc !== null ? acc * v / 100 : v / 100;
+    const s = fmt(p); if (s === null) { err = true; return; }
+    entry = s; typing = true;
+  }
+
+  function press(k) {
+    if (/^[0-9.]$/.test(k)) digit(k);
+    else if ('+-*/'.includes(k)) operator(k);
+    else if (k === '=') equals();
+    else if (k === 'C') clearAll();
+    else if (k === 'CE') clearEntry();
+    else if (k === 'neg') negate();
+    else if (k === 'back') back();
+    else if (k === 'sqrt') sqrt();
+    else if (k === '%') percent();
+    render();
+  }
+
+  document.getElementById('keys').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (b) press(b.dataset.k);
+  });
+
+  const keymap = { Enter: '=', '=': '=', Escape: 'C', Delete: 'CE', Backspace: 'back', '%': '%' };
+  document.addEventListener('keydown', e => {
+    let k = keymap[e.key] || e.key;
+    if (e.key === 'x' || e.key === 'X') k = '*';
+    if (!/^[0-9.+\-*/=%]$/.test(k) && !['C','CE','back'].includes(k)) return;
+    e.preventDefault();
+    press(k);
+    const btn = document.querySelector(`.keys button[data-k="${CSS.escape(k)}"]`);
+    if (btn) { btn.classList.add('press'); setTimeout(() => btn.classList.remove('press'), 90); }
+  });
+
+  // Example run on the tape so it opens showing how order works: 2 + 3 × 4 = 20, then = again
+  ['2','+','3','*','4','=','='].forEach(press);
+})();
+</script>
+</body>
+</html>
